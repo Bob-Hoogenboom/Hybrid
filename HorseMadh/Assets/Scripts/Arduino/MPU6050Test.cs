@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO.Ports;
+using System;
 
 
 namespace Arduino
@@ -15,58 +16,112 @@ namespace Arduino
         public string strRecieved;
         public string[] strData = new string[4];
         public string[] strDataRecieved = new string[4];
+
+        [Header("QuaternionData")]
         public float qw, qx, qy, qz;
+        private Quaternion initialRotation = Quaternion.identity;
+
+        [Header("ButtonData")]
+        private bool isCalibrated = false;
 
 
-        // Start is called before the first frame update
-        void Start()
+        private void Start()
         {
             //search for a port with active input from an Arduino
             foreach (string port in ports)
             {
-                if (port.Contains("COM")) //string search is inefficient
+                try
                 {
-                    Debug.Log(port);
-                    arduinoPort = new SerialPort(port, 115200);
+                    arduinoPort = new SerialPort(port, 115200)
+                    {
+                        ReadTimeout = 100
+                    };
                     arduinoPort.Open();
+                    Debug.Log($"Opened port {port}");
+                    break; // Exit the loop once a port is successfully opened
                 }
-                else
+                catch (System.Exception ex)
                 {
-                    Debug.LogWarning("No Arduino Found");
+                    Debug.LogWarning($"Could not open port {port}: {ex.Message}");
                 }
             }
         }
 
 
         // Update is called once per frame
-        void Update()
+        private void Update()
         {
             if (arduinoPort.IsOpen)
             {
-                ReadGyroScope();
+                ReadArduinoData();
             }
         }
 
 
-        private void ReadGyroScope()
+
+        private void ReadArduinoData()
         {
-            strRecieved = arduinoPort.ReadLine();
-            //Debug.Log(strRecieved);
-            strData = strRecieved.Split(",");
-            if (strData[0] != "" && strData[1] != "" && strData[2] != "" && strData[3] != "") //Makes sure all quaternion data is ready (Values: W,X,Y,Z)
+            try
             {
-                strDataRecieved[0] = strData[0];
-                strDataRecieved[1] = strData[1];
-                strDataRecieved[2] = strData[2];
-                strDataRecieved[3] = strData[3];
+                strRecieved = arduinoPort.ReadLine();
+                Debug.Log($"Raw data received: {strRecieved}");
 
-                qw = float.Parse(strDataRecieved[0]);
-                qx = float.Parse(strDataRecieved[1]);
-                qy = float.Parse(strDataRecieved[2]);
-                qz = float.Parse(strDataRecieved[3]);
+                strData = strRecieved.Split(",");
 
-                transform.rotation = new Quaternion(-qx, -qz, -qy, qw);
+                if (strData.Length >= 5) // Ensure there are at least 5 values (4 for quaternion, 1 for button state)
+                {
+                    // Parse the first four quaternion values
+                    if (float.TryParse(strData[0], out qw) &&
+                        float.TryParse(strData[1], out qx) &&
+                        float.TryParse(strData[2], out qy) &&
+                        float.TryParse(strData[3], out qz))
+                    {
+                        Quaternion currentGyroRotation = new Quaternion(-qx, -qz, -qy, qw);
+
+                        if (!isCalibrated)
+                        {
+                            // If not calibrated, use the current rotation as the initial reference
+                            initialRotation = currentGyroRotation;
+                            isCalibrated = true;
+                        }
+
+                        // Apply the recalibrated rotation
+                        transform.rotation = Quaternion.Inverse(initialRotation) * currentGyroRotation;
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Invalid quaternion data format in the first 4 values.");
+                    }
+
+                    // Handle button press (5th value)
+                    if (strData[4].Trim() == "0") // "0" is for when the button is pressed this is for the internal pull-up resistor
+                    {
+                        ResetRotation();
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("Insufficient data received. Expected at least 5 values.");
+                }
             }
+            catch (TimeoutException)
+            {
+                Debug.LogWarning("ReadLine timed out.");
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"Error reading data: {ex.Message}");
+            }
+        }
+
+        private void ResetRotation()
+        {
+            Debug.Log("Button pressed: Resetting rotation and recalibrating gyroscope.");
+            // Reset the object's rotation
+            transform.rotation = Quaternion.identity;
+
+            // Recalibrate by resetting the initial rotation
+            isCalibrated = false;
         }
     }
 
