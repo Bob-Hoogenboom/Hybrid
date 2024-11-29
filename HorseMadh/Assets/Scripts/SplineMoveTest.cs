@@ -45,19 +45,18 @@ public class SplineMoveTest : MonoBehaviour
         Vector3 posOffset = transform.right * trackOffset;
         transform.localPosition = trackPosition + posOffset;
 
-        //TODO go faster in tighter corners
-        Pose pose = new Pose();
-        pose.position = splineTrack.EvaluatePosition(trackProgress + Time.deltaTime);
-        pose.rotation = UpdateRotation(trackProgress + Time.deltaTime);
+        Pose nextTransform = new Pose();
+        nextTransform.position = splineTrack.EvaluatePosition(trackProgress + Time.deltaTime);
+        nextTransform.rotation = UpdateRotation(trackProgress + Time.deltaTime);
 
-        float dist = Vector3.Distance(trackPosition + posOffset, pose.position + pose.right * trackOffset);
-        float outerDist = Vector3.Distance(trackPosition - posOffset, pose.position - pose.right * trackOffset);
+        //FIX multiplier applying on straight sections
+
+        float dist = Vector3.Distance(trackPosition + posOffset, nextTransform.position + nextTransform.right * trackOffset);
+        float outerDist = Vector3.Distance(trackPosition - posOffset, nextTransform.position - nextTransform.right * trackOffset);
         bool isInsideCorner = dist < outerDist;
         float cornerMultiplier = isInsideCorner ? 2 * Mathf.Abs(trackOffset) : 0.5f * Mathf.Abs(trackOffset);
 
-        Debug.Log(cornerMultiplier);
-
-        //add progress on the track and reset to zero at start position
+        //adds progress on the track and reset to zero at start position
         trackProgress += (moveSpeed + (moveSpeed * cornerMultiplier)) * Time.deltaTime / trackLength;
         lapTime += Time.deltaTime;
         if (trackProgress > 1f)
@@ -68,6 +67,11 @@ public class SplineMoveTest : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gets correct rotation on the spline given the progress
+    /// </summary>
+    /// <param name="trackProgress"></param>
+    /// <returns></returns>
     private Quaternion UpdateRotation(float trackProgress)
     {
         Vector3 forward = Vector3.forward;
