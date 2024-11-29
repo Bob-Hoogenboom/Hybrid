@@ -5,6 +5,8 @@ public class SplineMoveTest : MonoBehaviour
 {
     [SerializeField]
     private float moveSpeed = 1f;
+    [SerializeField]
+    private float maxOffset = 1f;
 
     [SerializeField]
     private SplineContainer splineContainer;
@@ -12,9 +14,11 @@ public class SplineMoveTest : MonoBehaviour
     private Spline splineTrack;
     private float trackLength;
 
-    private float timer = 0f;
+    private float trackProgress = 0f;
 
     private float trackOffset;
+
+    private float lapTime = 0f;
 
     private void Start()
     {
@@ -24,10 +28,7 @@ public class SplineMoveTest : MonoBehaviour
 
     void Update()
     {
-        timer += moveSpeed * Time.deltaTime / trackLength;
-        if (timer > 1f) timer = 0f;
-
-        Vector3 trackPosition = splineTrack.EvaluatePosition(timer);
+        Vector3 trackPosition = splineTrack.EvaluatePosition(trackProgress);
 
         if (Input.GetKey(KeyCode.LeftArrow))
         {
@@ -37,30 +38,52 @@ public class SplineMoveTest : MonoBehaviour
         {
             trackOffset += Time.deltaTime * moveSpeed;
         }
+        trackOffset = Mathf.Clamp(trackOffset, -maxOffset, maxOffset);
 
-        UpdateRotation();
+        transform.rotation = UpdateRotation(trackProgress);
 
-        transform.position = trackPosition;
         Vector3 posOffset = transform.right * trackOffset;
-        transform.localPosition += posOffset;
+        transform.localPosition = trackPosition + posOffset;
+
+        //TODO go faster in tighter corners
+        Pose pose = new Pose();
+        pose.position = splineTrack.EvaluatePosition(trackProgress + Time.deltaTime);
+        pose.rotation = UpdateRotation(trackProgress + Time.deltaTime);
+
+        float dist = Vector3.Distance(trackPosition + posOffset, pose.position + pose.right * trackOffset);
+        float outerDist = Vector3.Distance(trackPosition - posOffset, pose.position - pose.right * trackOffset);
+        bool isInsideCorner = dist < outerDist;
+        float cornerMultiplier = isInsideCorner ? 2 * Mathf.Abs(trackOffset) : 0.5f * Mathf.Abs(trackOffset);
+
+        Debug.Log(cornerMultiplier);
+
+        //add progress on the track and reset to zero at start position
+        trackProgress += (moveSpeed + (moveSpeed * cornerMultiplier)) * Time.deltaTime / trackLength;
+        lapTime += Time.deltaTime;
+        if (trackProgress > 1f)
+        {
+            trackProgress = 0f;
+            Debug.Log(lapTime);
+            lapTime = 0f;
+        }
     }
 
-    private void UpdateRotation()
+    private Quaternion UpdateRotation(float trackProgress)
     {
         Vector3 forward = Vector3.forward;
         Vector3 up = Vector3.up;
 
-        forward = splineTrack.EvaluateTangent(timer);
+        forward = splineTrack.EvaluateTangent(trackProgress);
         if (Vector3.Magnitude(forward) <= Mathf.Epsilon)
         {
-            if (timer < 1f)
-                forward = splineTrack.EvaluateTangent(Mathf.Min(1f, timer + 0.01f));
+            if (trackProgress < 1f)
+                forward = splineTrack.EvaluateTangent(Mathf.Min(1f, trackProgress + 0.01f));
             else
-                forward = splineTrack.EvaluateTangent(timer - 0.01f);
+                forward = splineTrack.EvaluateTangent(trackProgress - 0.01f);
         }
         forward.Normalize();
-        up = splineTrack.EvaluateUpVector(timer);
+        up = splineTrack.EvaluateUpVector(trackProgress);
 
-        transform.rotation = Quaternion.LookRotation(forward, up);
+        return Quaternion.LookRotation(forward, up);
     }
 }
