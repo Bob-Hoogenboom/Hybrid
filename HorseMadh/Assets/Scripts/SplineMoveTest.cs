@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -7,6 +8,9 @@ public class SplineMoveTest : MonoBehaviour
     private float moveSpeed = 1f;
     [SerializeField]
     private float maxOffset = 1f;
+
+    [SerializeField]
+    private float cornerMultiplierBoost = 2f;
 
     [SerializeField]
     private SplineContainer splineContainer;
@@ -45,19 +49,25 @@ public class SplineMoveTest : MonoBehaviour
         Vector3 posOffset = transform.right * trackOffset;
         transform.localPosition = trackPosition + posOffset;
 
+        float nextTrackPosition = (splineTrack.GetLength() * 2f);
         Pose nextTransform = new Pose();
-        nextTransform.position = splineTrack.EvaluatePosition(trackProgress + Time.deltaTime);
-        nextTransform.rotation = UpdateRotation(trackProgress + Time.deltaTime);
+        nextTransform.position = splineTrack.EvaluatePosition(trackProgress + nextTrackPosition);
+        nextTransform.rotation = UpdateRotation(trackProgress + nextTrackPosition);
 
-        //FIX multiplier applying on straight sections
-
+        //checks if player is in inner or outer corner and calculates modifier
         float dist = Vector3.Distance(trackPosition + posOffset, nextTransform.position + nextTransform.right * trackOffset);
         float outerDist = Vector3.Distance(trackPosition - posOffset, nextTransform.position - nextTransform.right * trackOffset);
         bool isInsideCorner = dist < outerDist;
-        float cornerMultiplier = isInsideCorner ? 2 * Mathf.Abs(trackOffset) : 0.5f * Mathf.Abs(trackOffset);
+        float cornerMultiplier = isInsideCorner ? cornerMultiplierBoost * Mathf.Abs(trackOffset) : (1/cornerMultiplierBoost) * Mathf.Abs(trackOffset);
 
-        //adds progress on the track and reset to zero at start position
-        trackProgress += (moveSpeed + (moveSpeed * cornerMultiplier)) * Time.deltaTime / trackLength;
+        //gets the dot product of the corner to check how strong a multiplier should apply
+        Vector3 vec1 = splineTrack.EvaluateTangent(trackProgress);
+        Vector3 vec2 = splineTrack.EvaluateTangent(trackProgress + (1f / nextTrackPosition));
+        var dot = Vector3.Dot(vec1.normalized, vec2.normalized);
+        float curveEffect = 1 + (cornerMultiplier * ((1 - dot) * 100));
+
+        //adds progress on the track with a multiplier and resets to zero at start position
+        trackProgress += (moveSpeed * curveEffect) * Time.deltaTime / trackLength;
         lapTime += Time.deltaTime;
         if (trackProgress > 1f)
         {
@@ -68,7 +78,7 @@ public class SplineMoveTest : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets correct rotation on the spline given the progress
+    /// Returns quaternion rotation on the spline given the progress on the track
     /// </summary>
     /// <param name="trackProgress"></param>
     /// <returns></returns>

@@ -174,7 +174,7 @@ MonoBehaviour:
       TangentIn:
         x: 0
         y: 0
-        z: -3
+        z: -4
       TangentOut:
         x: 0
         y: 0
@@ -214,7 +214,7 @@ MonoBehaviour:
       TangentOut:
         x: 0
         y: 0
-        z: 3
+        z: 4
       Rotation:
         value:
           x: 0
@@ -228,7 +228,7 @@ MonoBehaviour:
       TangentIn:
         x: 0
         y: 0
-        z: -3
+        z: -4
       TangentOut:
         x: 0
         y: 0
@@ -268,7 +268,7 @@ MonoBehaviour:
       TangentOut:
         x: 0
         y: 0
-        z: 3
+        z: 4
       Rotation:
         value:
           x: 0
@@ -359,8 +359,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62afe3ef3e8044b4a8cc1f5bbb9e43dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 1
+  moveSpeed: 2
   maxOffset: 0.5
+  cornerMultiplierBoost: 5
   splineContainer: {fileID: 120723254}
 --- !u!1 &493378986
 GameObject:
