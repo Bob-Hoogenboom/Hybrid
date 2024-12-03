@@ -361,7 +361,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 2
   maxOffset: 0.5
-  cornerMultiplierBoost: 5
+  cornerMultiplierBoost: 2
   splineContainer: {fileID: 120723254}
 --- !u!1 &493378986
 GameObject:

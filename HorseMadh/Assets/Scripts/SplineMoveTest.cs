@@ -64,21 +64,22 @@ public class SplineMoveTest : MonoBehaviour
         string shortestCorner = leftDist < rightDist ? "left" : "right";
 
         bool isInInnerCorner = false;
-        float shortCornerDistance = 0f;
-        float longCornerDistance = 0f;
+        float shortCornerDistance = Mathf.Min(leftDist, rightDist);
+        float longCornerDistance = Mathf.Max(leftDist, rightDist);
         if (trackOffset < 0 && shortestCorner == "left" || trackOffset > 0 && shortestCorner == "right")
         {
-            shortCornerDistance = Mathf.Min(leftDist, rightDist);
-            longCornerDistance = Mathf.Max(leftDist, rightDist);
             isInInnerCorner = true;
         }
 
-        float multiplier = isInInnerCorner ? (cornerMultiplierBoost * Mathf.Abs(trackOffset)) * shortCornerDistance : ((1/cornerMultiplierBoost) * Mathf.Abs(trackOffset)) * longCornerDistance;
+        float multiplier = isInInnerCorner ? cornerMultiplierBoost * Mathf.Abs(trackOffset) : (1/cornerMultiplierBoost) * Mathf.Abs(trackOffset);
+        float curvyness = longCornerDistance - shortCornerDistance;
 
-        Debug.Log(multiplier);
+        curvyness = isInInnerCorner ? longCornerDistance - shortCornerDistance : shortCornerDistance - longCornerDistance;
+
+        multiplier *= curvyness;
 
         //adds progress on the track with a multiplier and resets to zero at start position
-        trackProgress += moveSpeed * Time.deltaTime / trackLength;
+        trackProgress += (moveSpeed * (1+multiplier)) * Time.deltaTime / trackLength;
         lapTime += Time.deltaTime;
         if (trackProgress > 1f)
         {
