@@ -52,12 +52,6 @@ public class SplineMoveTest : MonoBehaviour
         Pose forwardTransform = new Pose(splineTrack.EvaluatePosition(trackProgress + 0.05f), UpdateRotation(trackProgress + 0.05f));
         Pose backTransform = new Pose(splineTrack.EvaluatePosition(trackProgress - 0.05f), UpdateRotation(trackProgress - 0.05f));
 
-        //debug rays
-        Debug.DrawRay(forwardTransform.position, forwardTransform.right, Color.red);
-        Debug.DrawRay(forwardTransform.position, -forwardTransform.right, Color.red);
-        Debug.DrawRay(backTransform.position, backTransform.right, Color.magenta);
-        Debug.DrawRay(backTransform.position, -backTransform.right, Color.magenta);
-
         float leftDist = Vector3.Distance(forwardTransform.position - forwardTransform.right, backTransform.position - backTransform.right);
         float rightDist = Vector3.Distance(forwardTransform.position + forwardTransform.right, backTransform.position + backTransform.right);
 
