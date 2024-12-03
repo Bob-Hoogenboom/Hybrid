@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -49,25 +48,37 @@ public class SplineMoveTest : MonoBehaviour
         Vector3 posOffset = transform.right * trackOffset;
         transform.localPosition = trackPosition + posOffset;
 
-        float nextTrackPosition = (splineTrack.GetLength() * 2f);
-        Pose nextTransform = new Pose();
-        nextTransform.position = splineTrack.EvaluatePosition(trackProgress + nextTrackPosition);
-        nextTransform.rotation = UpdateRotation(trackProgress + nextTrackPosition);
+        //creates a forward and back transform
+        Pose forwardTransform = new Pose(splineTrack.EvaluatePosition(trackProgress + 0.05f), UpdateRotation(trackProgress + 0.05f));
+        Pose backTransform = new Pose(splineTrack.EvaluatePosition(trackProgress - 0.05f), UpdateRotation(trackProgress - 0.05f));
 
-        //checks if player is in inner or outer corner and calculates modifier
-        float dist = Vector3.Distance(trackPosition + posOffset, nextTransform.position + nextTransform.right * trackOffset);
-        float outerDist = Vector3.Distance(trackPosition - posOffset, nextTransform.position - nextTransform.right * trackOffset);
-        bool isInsideCorner = dist < outerDist;
-        float cornerMultiplier = isInsideCorner ? cornerMultiplierBoost * Mathf.Abs(trackOffset) : (1/cornerMultiplierBoost) * Mathf.Abs(trackOffset);
+        //debug rays
+        Debug.DrawRay(forwardTransform.position, forwardTransform.right, Color.red);
+        Debug.DrawRay(forwardTransform.position, -forwardTransform.right, Color.red);
+        Debug.DrawRay(backTransform.position, backTransform.right, Color.magenta);
+        Debug.DrawRay(backTransform.position, -backTransform.right, Color.magenta);
 
-        //gets the dot product of the corner to check how strong a multiplier should apply
-        Vector3 vec1 = splineTrack.EvaluateTangent(trackProgress);
-        Vector3 vec2 = splineTrack.EvaluateTangent(trackProgress + (1f / nextTrackPosition));
-        var dot = Vector3.Dot(vec1.normalized, vec2.normalized);
-        float curveEffect = 1 + (cornerMultiplier * ((1 - dot) * 100));
+        float leftDist = Vector3.Distance(forwardTransform.position - forwardTransform.right, backTransform.position - backTransform.right);
+        float rightDist = Vector3.Distance(forwardTransform.position + forwardTransform.right, backTransform.position + backTransform.right);
+
+        string shortestCorner = leftDist < rightDist ? "left" : "right";
+
+        bool isInInnerCorner = false;
+        float shortCornerDistance = 0f;
+        float longCornerDistance = 0f;
+        if (trackOffset < 0 && shortestCorner == "left" || trackOffset > 0 && shortestCorner == "right")
+        {
+            shortCornerDistance = Mathf.Min(leftDist, rightDist);
+            longCornerDistance = Mathf.Max(leftDist, rightDist);
+            isInInnerCorner = true;
+        }
+
+        float multiplier = isInInnerCorner ? (cornerMultiplierBoost * Mathf.Abs(trackOffset)) * shortCornerDistance : ((1/cornerMultiplierBoost) * Mathf.Abs(trackOffset)) * longCornerDistance;
+
+        Debug.Log(multiplier);
 
         //adds progress on the track with a multiplier and resets to zero at start position
-        trackProgress += (moveSpeed * curveEffect) * Time.deltaTime / trackLength;
+        trackProgress += moveSpeed * Time.deltaTime / trackLength;
         lapTime += Time.deltaTime;
         if (trackProgress > 1f)
         {
