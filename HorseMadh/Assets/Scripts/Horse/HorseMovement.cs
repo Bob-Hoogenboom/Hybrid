@@ -31,7 +31,6 @@ public class HorseMovement : MonoBehaviour
         if (arduino.gyroscopeRotation != null) 
         {
             CalculateSpeed();
-            Move();
             Hobbeling();
         }
     }
@@ -59,6 +58,7 @@ public class HorseMovement : MonoBehaviour
         lastUpdateTime = currentTime;
 
         Vector3 moveVector = new Vector3(0, 0, shakeSpeed * Time.deltaTime / 100f);
+        transform.position = transform.position += moveVector;
     }
 
     private void Move()
@@ -76,21 +76,18 @@ public class HorseMovement : MonoBehaviour
         float clampedX = Mathf.Clamp(gyroEuler.x, -xRotationClamp, xRotationClamp);
         float clampedZ = Mathf.Clamp(gyroEuler.z, -zRotationClamp, zRotationClamp);
 
-
         Quaternion targetRotation = Quaternion.Euler(clampedX, 0, clampedZ);
 
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * sensitivity); 
     }
 
-    // Helper method to normalize angles to [-180, 180]
+    // Normalizes angles to [-180, 180]
     private float NormalizeAngle(float angle)
     {
         if (angle > 180f) angle -= 360f;
         if (angle < -180f) angle += 360f;
         return angle;
     }
- 
-    
 
     private void ResetRotation()
     {
