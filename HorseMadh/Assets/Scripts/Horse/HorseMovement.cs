@@ -21,19 +21,17 @@ public class HorseMovement : MonoBehaviour
 
     [Header("Speed")]
     [SerializeField] private float speedModifier = 200f; 
+    private float _previousXRotation = 0f;
     public float shakeSpeed = 0f;
-    private float previousXRotation = 0f;
 
-    [SerializeField]
+    [Header("SplineTrack")]
     [Tooltip("The maximum offset from the main line of the spline track")]
-    private float maxOffset = 1f;
+    [SerializeField]private float maxOffset = 1f;
 
-    [SerializeField]
     [Tooltip("The multiplier applied in corners. Time value should always range from 0 to 1. Where 0 is the negative and 1 is the positive modifier")]
-    private AnimationCurve cornerMultiplier;
+    [SerializeField] private AnimationCurve cornerMultiplier;
 
-    [SerializeField]
-    private SplineContainer splineContainer;
+    [SerializeField] private SplineContainer splineContainer;
 
     private Spline _splineTrack;
     private float _trackLength;
@@ -60,7 +58,7 @@ public class HorseMovement : MonoBehaviour
     private void CalculateSpeed()
     {
         float currentXRotation = NormalizeAngle(arduino.gyroscopeRotation.eulerAngles.x);
-        float deltaX = Mathf.Abs(currentXRotation - previousXRotation);
+        float deltaX = Mathf.Abs(currentXRotation - _previousXRotation);
 
         if (deltaX > 180f)
         {
@@ -68,7 +66,7 @@ public class HorseMovement : MonoBehaviour
         }
 
         shakeSpeed = deltaX / Time.deltaTime /speedModifier;
-        previousXRotation = currentXRotation;
+        _previousXRotation = currentXRotation;
     }
 
     private void Hobbeling()
