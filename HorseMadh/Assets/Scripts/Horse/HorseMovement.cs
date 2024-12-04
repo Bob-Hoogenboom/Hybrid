@@ -105,11 +105,11 @@ public class HorseMovement : MonoBehaviour
         //controls for offsetting the player on the track and clamps between the max
         if (transform.rotation.z < 0)
         {
-            _trackOffset += transform.rotation.z * Time.deltaTime * shakeSpeed;
+            _trackOffset -= transform.rotation.z * Time.deltaTime * shakeSpeed;
         }
         else if (transform.rotation.z > 0)
         {
-            _trackOffset += transform.rotation.z * Time.deltaTime * shakeSpeed;
+            _trackOffset -= transform.rotation.z * Time.deltaTime * shakeSpeed;
         }
         _trackOffset = Mathf.Clamp(_trackOffset, -maxOffset, maxOffset);
 
@@ -124,11 +124,11 @@ public class HorseMovement : MonoBehaviour
         //calculates whether the left or right side of the track is the shortest corner
         float leftDist = Vector3.Distance(forwardTransform.position - forwardTransform.right, backTransform.position - backTransform.right);
         float rightDist = Vector3.Distance(forwardTransform.position + forwardTransform.right, backTransform.position + backTransform.right);
-        string shortestCorner = leftDist < rightDist ? "left" : "right";
+        bool isShortCornerRight = leftDist < rightDist ? true : false;
 
         //checks if the player is in the shortest corner
         bool isInInnerCorner = false;
-        if (_trackOffset < 0 && shortestCorner == "left" || _trackOffset > 0 && shortestCorner == "right")
+        if (_trackOffset < 0 && isShortCornerRight || _trackOffset > 0 && !isShortCornerRight)
         {
             isInInnerCorner = true;
         }
@@ -143,12 +143,13 @@ public class HorseMovement : MonoBehaviour
         baseMultiplier = (isInInnerCorner ? baseMultiplier : -baseMultiplier) * curveIntensity;
 
         //calculates the multiplier based on the cornerMultiplier curve
-        var minCurveValue = cornerMultiplier.keys[0].value;
-        var maxCurveValue = cornerMultiplier.keys[cornerMultiplier.length - 1].value;
-        float THEMULTIPLIER = Utility.Remap(baseMultiplier, -maxCurveValue, maxCurveValue, minCurveValue, maxCurveValue);
+        float minCurveValue = cornerMultiplier.keys[0].value;
+        float maxCurveValue = cornerMultiplier.keys[cornerMultiplier.length - 1].value;
+
+        float TheMarkiplier = Utility.Remap(baseMultiplier, -maxCurveValue, maxCurveValue, minCurveValue, maxCurveValue);
 
         //adds progress on the track with a multiplier and resets to zero at start position
-        _trackProgress += (shakeSpeed * THEMULTIPLIER) * Time.deltaTime / _trackLength;
+        _trackProgress += (shakeSpeed * TheMarkiplier) * Time.deltaTime / _trackLength;
         if (_trackProgress > 1f)
         {
             _trackProgress = 0f;
@@ -162,10 +163,7 @@ public class HorseMovement : MonoBehaviour
     /// <returns></returns>
     private Quaternion UpdateRotation(float trackProgress)
     {
-        Vector3 forward = Vector3.forward;
-        Vector3 up = Vector3.up;
-
-        forward = _splineTrack.EvaluateTangent(trackProgress);
+        Vector3 forward = _splineTrack.EvaluateTangent(trackProgress);
         if (Vector3.Magnitude(forward) <= Mathf.Epsilon)
         {
             if (trackProgress < 1f)
@@ -174,7 +172,7 @@ public class HorseMovement : MonoBehaviour
                 forward = _splineTrack.EvaluateTangent(trackProgress - 0.01f);
         }
         forward.Normalize();
-        up = _splineTrack.EvaluateUpVector(trackProgress);
+        Vector3 up = _splineTrack.EvaluateUpVector(trackProgress);
 
         return Quaternion.LookRotation(forward, up);
     }
