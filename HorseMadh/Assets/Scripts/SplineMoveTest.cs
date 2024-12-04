@@ -9,7 +9,8 @@ public class SplineMoveTest : MonoBehaviour
     private float maxOffset = 1f;
 
     [SerializeField]
-    private AnimationCurve curver;
+    [Tooltip("The multiplier applied in corners. Time value should always range from 0 to 1")]
+    private AnimationCurve cornerMultiplier;
 
     [SerializeField]
     private SplineContainer splineContainer;
@@ -69,13 +70,13 @@ public class SplineMoveTest : MonoBehaviour
         float curveIntensity = Vector3.Dot(forwardTransform.right, backTransform.right);
         curveIntensity = Mathf.Abs(curveIntensity - 1);
 
-        float remappedOffset = Utility.Remap(trackOffset, -0.5f, 0.5f, -1, 1);
-        float baseMultiplier = curver.Evaluate(curveIntensity * Mathf.Abs(remappedOffset));
+        float remappedOffset = Utility.Remap(trackOffset, -maxOffset, maxOffset, -1, 1);
+        float baseMultiplier = cornerMultiplier.Evaluate(curveIntensity * Mathf.Abs(remappedOffset));
 
         baseMultiplier = isInInnerCorner ? baseMultiplier : -baseMultiplier;
 
-        var minCvalue = curver.keys[0].value;
-        var maxCvalue = curver.keys[curver.length - 1].value;
+        var minCvalue = cornerMultiplier.keys[0].value;
+        var maxCvalue = cornerMultiplier.keys[cornerMultiplier.length - 1].value;
 
         float THEMULTIPLIER = Utility.Remap(baseMultiplier, -maxCvalue, maxCvalue, minCvalue, maxCvalue);
 

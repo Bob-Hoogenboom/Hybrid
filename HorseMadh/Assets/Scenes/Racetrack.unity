@@ -361,15 +361,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 2
   maxOffset: 0.5
-  cornerMultiplierBoost: 2
-  curver:
+  cornerMultiplier:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
-      inSlope: 2.5
-      outSlope: 2.5
+      value: 1
+      inSlope: 1.5
+      outSlope: 1.5
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
@@ -377,8 +376,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 1
       value: 2.5
-      inSlope: 2.5
-      outSlope: 2.5
+      inSlope: 1.5
+      outSlope: 1.5
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
