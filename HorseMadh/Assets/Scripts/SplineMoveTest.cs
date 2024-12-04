@@ -5,11 +5,10 @@ public class SplineMoveTest : MonoBehaviour
 {
     [SerializeField]
     private float moveSpeed = 1f;
-    [SerializeField]
+    [SerializeField][Tooltip("The maximum offset from the main line of the spline track")]
     private float maxOffset = 1f;
 
-    [SerializeField]
-    [Tooltip("The multiplier applied in corners. Time value should always range from 0 to 1")]
+    [SerializeField][Tooltip("The multiplier applied in corners. Time value should always range from 0 to 1")]
     private AnimationCurve cornerMultiplier;
 
     [SerializeField]
@@ -34,6 +33,7 @@ public class SplineMoveTest : MonoBehaviour
     {
         Vector3 trackPosition = splineTrack.EvaluatePosition(trackProgress);
 
+        //controls for offsetting the player on the track and clamps between the max
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             trackOffset -= Time.deltaTime * moveSpeed;
@@ -66,19 +66,19 @@ public class SplineMoveTest : MonoBehaviour
             isInInnerCorner = true;
         }
 
-        //alignment is used to get the intensity of the curve
+        //gets the intensity of a curve. ranging from 0(not curved) to 1(extremely curved)
         float curveIntensity = Vector3.Dot(forwardTransform.right, backTransform.right);
         curveIntensity = Mathf.Abs(curveIntensity - 1);
 
+        //calculates the base multiplier with the intensity of the curve applied
         float remappedOffset = Utility.Remap(trackOffset, -maxOffset, maxOffset, -1, 1);
-        float baseMultiplier = cornerMultiplier.Evaluate(curveIntensity * Mathf.Abs(remappedOffset));
+        float baseMultiplier = cornerMultiplier.Evaluate(Mathf.Abs(remappedOffset));
+        baseMultiplier = (isInInnerCorner ? baseMultiplier : -baseMultiplier) * curveIntensity;
 
-        baseMultiplier = isInInnerCorner ? baseMultiplier : -baseMultiplier;
-
-        var minCvalue = cornerMultiplier.keys[0].value;
-        var maxCvalue = cornerMultiplier.keys[cornerMultiplier.length - 1].value;
-
-        float THEMULTIPLIER = Utility.Remap(baseMultiplier, -maxCvalue, maxCvalue, minCvalue, maxCvalue);
+        //calculates the multiplier based on the cornerMultiplier curve
+        var minCurveValue = cornerMultiplier.keys[0].value;
+        var maxCurveValue = cornerMultiplier.keys[cornerMultiplier.length - 1].value;
+        float THEMULTIPLIER = Utility.Remap(baseMultiplier, -maxCurveValue, maxCurveValue, minCurveValue, maxCurveValue);
 
         //adds progress on the track with a multiplier and resets to zero at start position
         trackProgress += (moveSpeed * THEMULTIPLIER) * Time.deltaTime / trackLength;
