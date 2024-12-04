@@ -14,45 +14,41 @@ public class SplineMoveTest : MonoBehaviour
     [SerializeField]
     private SplineContainer splineContainer;
 
-    private Spline splineTrack;
-    private float trackLength;
-
-    private float trackProgress = 0f;
-
-    private float trackOffset;
-
-    private float lapTime = 0f;
+    private Spline _splineTrack;
+    private float _trackLength;
+    private float _trackProgress = 0f;
+    private float _trackOffset;
 
     private void Start()
     {
-        splineTrack = splineContainer.Spline;
-        trackLength = splineTrack.GetLength();
+        _splineTrack = splineContainer.Spline;
+        _trackLength = _splineTrack.GetLength();
     }
 
     void Update()
     {
-        Vector3 trackPosition = splineTrack.EvaluatePosition(trackProgress);
+        Vector3 trackPosition = _splineTrack.EvaluatePosition(_trackProgress);
 
         //controls for offsetting the player on the track and clamps between the max
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            trackOffset -= Time.deltaTime * moveSpeed;
+            _trackOffset -= Time.deltaTime * moveSpeed;
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
-            trackOffset += Time.deltaTime * moveSpeed;
+            _trackOffset += Time.deltaTime * moveSpeed;
         }
-        trackOffset = Mathf.Clamp(trackOffset, -maxOffset, maxOffset);
+        _trackOffset = Mathf.Clamp(_trackOffset, -maxOffset, maxOffset);
 
-        transform.rotation = UpdateRotation(trackProgress);
+        transform.rotation = UpdateRotation(_trackProgress);
 
         //calculates and sets the transform offset from the center of the track
-        Vector3 posOffset = transform.right * trackOffset;
+        Vector3 posOffset = transform.right * _trackOffset;
         transform.localPosition = trackPosition + posOffset;
 
         //creates a forward and back transform
-        Pose forwardTransform = new Pose(splineTrack.EvaluatePosition(trackProgress + 0.05f), UpdateRotation(trackProgress + 0.05f));
-        Pose backTransform = new Pose(splineTrack.EvaluatePosition(trackProgress - 0.05f), UpdateRotation(trackProgress - 0.05f));
+        Pose forwardTransform = new Pose(_splineTrack.EvaluatePosition(_trackProgress + 0.05f), UpdateRotation(_trackProgress + 0.05f));
+        Pose backTransform = new Pose(_splineTrack.EvaluatePosition(_trackProgress - 0.05f), UpdateRotation(_trackProgress - 0.05f));
 
         //calculates whether the left or right side of the track is the shortest corner
         float leftDist = Vector3.Distance(forwardTransform.position - forwardTransform.right, backTransform.position - backTransform.right);
@@ -61,7 +57,7 @@ public class SplineMoveTest : MonoBehaviour
 
         //checks if the player is in the shortest corner
         bool isInInnerCorner = false;
-        if (trackOffset < 0 && shortestCorner == "left" || trackOffset > 0 && shortestCorner == "right")
+        if (_trackOffset < 0 && shortestCorner == "left" || _trackOffset > 0 && shortestCorner == "right")
         {
             isInInnerCorner = true;
         }
@@ -71,7 +67,7 @@ public class SplineMoveTest : MonoBehaviour
         curveIntensity = Mathf.Abs(curveIntensity - 1);
 
         //calculates the base multiplier with the intensity of the curve applied
-        float remappedOffset = Utility.Remap(trackOffset, -maxOffset, maxOffset, -1, 1);
+        float remappedOffset = Utility.Remap(_trackOffset, -maxOffset, maxOffset, -1, 1);
         float baseMultiplier = cornerMultiplier.Evaluate(Mathf.Abs(remappedOffset));
         baseMultiplier = (isInInnerCorner ? baseMultiplier : -baseMultiplier) * curveIntensity;
 
@@ -81,13 +77,10 @@ public class SplineMoveTest : MonoBehaviour
         float THEMULTIPLIER = Utility.Remap(baseMultiplier, -maxCurveValue, maxCurveValue, minCurveValue, maxCurveValue);
 
         //adds progress on the track with a multiplier and resets to zero at start position
-        trackProgress += (moveSpeed * THEMULTIPLIER) * Time.deltaTime / trackLength;
-        lapTime += Time.deltaTime;
-        if (trackProgress > 1f)
+        _trackProgress += (moveSpeed * THEMULTIPLIER) * Time.deltaTime / _trackLength;
+        if (_trackProgress > 1f)
         {
-            trackProgress = 0f;
-            Debug.Log(lapTime);
-            lapTime = 0f;
+            _trackProgress = 0f;
         }
     }
 
@@ -101,16 +94,16 @@ public class SplineMoveTest : MonoBehaviour
         Vector3 forward = Vector3.forward;
         Vector3 up = Vector3.up;
 
-        forward = splineTrack.EvaluateTangent(trackProgress);
+        forward = _splineTrack.EvaluateTangent(trackProgress);
         if (Vector3.Magnitude(forward) <= Mathf.Epsilon)
         {
             if (trackProgress < 1f)
-                forward = splineTrack.EvaluateTangent(Mathf.Min(1f, trackProgress + 0.01f));
+                forward = _splineTrack.EvaluateTangent(Mathf.Min(1f, trackProgress + 0.01f));
             else
-                forward = splineTrack.EvaluateTangent(trackProgress - 0.01f);
+                forward = _splineTrack.EvaluateTangent(trackProgress - 0.01f);
         }
         forward.Normalize();
-        up = splineTrack.EvaluateUpVector(trackProgress);
+        up = _splineTrack.EvaluateUpVector(trackProgress);
 
         return Quaternion.LookRotation(forward, up);
     }
