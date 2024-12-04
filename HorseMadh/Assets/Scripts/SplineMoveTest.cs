@@ -8,7 +8,7 @@ public class SplineMoveTest : MonoBehaviour
     [SerializeField][Tooltip("The maximum offset from the main line of the spline track")]
     private float maxOffset = 1f;
 
-    [SerializeField][Tooltip("The multiplier applied in corners. Time value should always range from 0 to 1")]
+    [SerializeField][Tooltip("The multiplier applied in corners. Time value should always range from 0 to 1. Where 0 is the negative and 1 is the positive modifier")]
     private AnimationCurve cornerMultiplier;
 
     [SerializeField]
