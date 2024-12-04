@@ -9,7 +9,7 @@ public class SplineMoveTest : MonoBehaviour
     private float maxOffset = 1f;
 
     [SerializeField]
-    private float cornerMultiplierBoost = 2f;
+    private AnimationCurve curver;
 
     [SerializeField]
     private SplineContainer splineContainer;
@@ -45,6 +45,7 @@ public class SplineMoveTest : MonoBehaviour
 
         transform.rotation = UpdateRotation(trackProgress);
 
+        //calculates and sets the transform offset from the center of the track
         Vector3 posOffset = transform.right * trackOffset;
         transform.localPosition = trackPosition + posOffset;
 
@@ -52,28 +53,34 @@ public class SplineMoveTest : MonoBehaviour
         Pose forwardTransform = new Pose(splineTrack.EvaluatePosition(trackProgress + 0.05f), UpdateRotation(trackProgress + 0.05f));
         Pose backTransform = new Pose(splineTrack.EvaluatePosition(trackProgress - 0.05f), UpdateRotation(trackProgress - 0.05f));
 
+        //calculates whether the left or right side of the track is the shortest corner
         float leftDist = Vector3.Distance(forwardTransform.position - forwardTransform.right, backTransform.position - backTransform.right);
         float rightDist = Vector3.Distance(forwardTransform.position + forwardTransform.right, backTransform.position + backTransform.right);
-
         string shortestCorner = leftDist < rightDist ? "left" : "right";
 
+        //checks if the player is in the shortest corner
         bool isInInnerCorner = false;
-        float shortCornerDistance = Mathf.Min(leftDist, rightDist);
-        float longCornerDistance = Mathf.Max(leftDist, rightDist);
         if (trackOffset < 0 && shortestCorner == "left" || trackOffset > 0 && shortestCorner == "right")
         {
             isInInnerCorner = true;
         }
 
-        float multiplier = isInInnerCorner ? cornerMultiplierBoost * Mathf.Abs(trackOffset) : (1/cornerMultiplierBoost) * Mathf.Abs(trackOffset);
-        float curvyness = longCornerDistance - shortCornerDistance;
+        //alignment is used to get the intensity of the curve
+        float curveIntensity = Vector3.Dot(forwardTransform.right, backTransform.right);
+        curveIntensity = Mathf.Abs(curveIntensity - 1);
 
-        curvyness = isInInnerCorner ? longCornerDistance - shortCornerDistance : shortCornerDistance - longCornerDistance;
+        float remappedOffset = Utility.Remap(trackOffset, -0.5f, 0.5f, -1, 1);
+        float baseMultiplier = curver.Evaluate(curveIntensity * Mathf.Abs(remappedOffset));
 
-        multiplier *= curvyness;
+        baseMultiplier = isInInnerCorner ? baseMultiplier : -baseMultiplier;
+
+        var minCvalue = curver.keys[0].value;
+        var maxCvalue = curver.keys[curver.length - 1].value;
+
+        float THEMULTIPLIER = Utility.Remap(baseMultiplier, -maxCvalue, maxCvalue, minCvalue, maxCvalue);
 
         //adds progress on the track with a multiplier and resets to zero at start position
-        trackProgress += (moveSpeed * (1+multiplier)) * Time.deltaTime / trackLength;
+        trackProgress += (moveSpeed * THEMULTIPLIER) * Time.deltaTime / trackLength;
         lapTime += Time.deltaTime;
         if (trackProgress > 1f)
         {
