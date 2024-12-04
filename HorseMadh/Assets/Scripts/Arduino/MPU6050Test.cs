@@ -5,7 +5,7 @@ using System.IO.Ports;
 using System;
 
 
-namespace Arduino
+namespace ArduinoTest
 {
     public class MPU6050Test : MonoBehaviour
     {
