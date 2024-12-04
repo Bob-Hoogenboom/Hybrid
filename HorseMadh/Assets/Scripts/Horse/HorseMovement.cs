@@ -37,33 +37,19 @@ public class HorseMovement : MonoBehaviour
 
     private void CalculateSpeed()
     {
-        float currentTime = Time.time;
-        float deltaTime = currentTime - lastUpdateTime;
-
         float currentXRotation = NormalizeAngle(arduino.gyroscopeRotation.eulerAngles.x);
+        float deltaX = Mathf.Abs(currentXRotation - previousXRotation);
 
-        if (deltaTime > 0f)
+        if (deltaX > 180f)
         {
-            float deltaX = Mathf.Abs(currentXRotation - previousXRotation);
-
-            if (deltaX > 180f)
-            {
-                deltaX = 360f - deltaX;
-            }
-
-            shakeSpeed = deltaX / deltaTime;
+            deltaX = 360f - deltaX;
         }
 
+        shakeSpeed = deltaX / Time.deltaTime;
         previousXRotation = currentXRotation;
-        lastUpdateTime = currentTime;
 
         Vector3 moveVector = new Vector3(0, 0, shakeSpeed * Time.deltaTime / 100f);
         transform.position = transform.position += moveVector;
-    }
-
-    private void Move()
-    {
-
     }
 
     private void Hobbeling()
