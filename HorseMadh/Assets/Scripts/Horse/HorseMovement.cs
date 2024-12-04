@@ -73,6 +73,10 @@ public class HorseMovement : MonoBehaviour
 
     private void Hobbeling()
     {
+        Quaternion splineRotation = UpdateRotation(_trackProgress);
+        Vector3 splineEuler = splineRotation.eulerAngles;
+        float splineY = splineEuler.y;
+
         Vector3 gyroEuler = arduino.gyroscopeRotation.eulerAngles;
 
         gyroEuler.x = NormalizeAngle(gyroEuler.x);
@@ -81,7 +85,7 @@ public class HorseMovement : MonoBehaviour
         float clampedX = Mathf.Clamp(gyroEuler.x, -xRotationClamp, xRotationClamp);
         float clampedZ = Mathf.Clamp(gyroEuler.z, -zRotationClamp, zRotationClamp);
 
-        Quaternion targetRotation = Quaternion.Euler(clampedX, 0, clampedZ);
+        Quaternion targetRotation = Quaternion.Euler(clampedX, splineY, clampedZ);
 
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * sensitivity); 
     }
@@ -108,8 +112,6 @@ public class HorseMovement : MonoBehaviour
             _trackOffset += transform.rotation.z * Time.deltaTime * shakeSpeed;
         }
         _trackOffset = Mathf.Clamp(_trackOffset, -maxOffset, maxOffset);
-
-        transform.rotation = UpdateRotation(_trackProgress);
 
         //calculates and sets the transform offset from the center of the track
         Vector3 posOffset = transform.right * _trackOffset;
