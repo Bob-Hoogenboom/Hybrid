@@ -1,4 +1,3 @@
-using Arduino;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -11,7 +10,7 @@ using UnityEngine.Splines;
 public class HorseMovement : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private ArduinoInput arduino;
+    [SerializeField] private PlayerControl controls;
 
     [Header("Rotation")]
     public float xRotationClamp = 30f;
@@ -46,8 +45,8 @@ public class HorseMovement : MonoBehaviour
 
     private void Update()
     {
-        if (arduino.calibratePressed) { ResetRotation(); }
-        if (arduino.gyroscopeRotation != null) 
+        if (controls.playerVariables.buttonThing) { ResetRotation(); }
+        if (controls.playerVariables.rotation != null) 
         {
             CalculateSpeed();
             Move();
@@ -57,7 +56,7 @@ public class HorseMovement : MonoBehaviour
 
     private void CalculateSpeed()
     {
-        float currentXRotation = NormalizeAngle(arduino.gyroscopeRotation.eulerAngles.x);
+        float currentXRotation = NormalizeAngle(controls.playerVariables.rotation.eulerAngles.x);
         float deltaX = Mathf.Abs(currentXRotation - _previousXRotation);
 
         if (deltaX > 180f)
@@ -75,7 +74,7 @@ public class HorseMovement : MonoBehaviour
         Vector3 splineEuler = splineRotation.eulerAngles;
         float splineY = splineEuler.y;
 
-        Vector3 gyroEuler = arduino.gyroscopeRotation.eulerAngles;
+        Vector3 gyroEuler = controls.playerVariables.rotation.eulerAngles;
 
         gyroEuler.x = NormalizeAngle(gyroEuler.x);
         gyroEuler.z = NormalizeAngle(gyroEuler.z);
