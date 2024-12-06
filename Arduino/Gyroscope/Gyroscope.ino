@@ -19,14 +19,13 @@
 // AD0 low = 0x68 (default for SparkFun breakout and InvenSense evaluation board)
 // AD0 high = 0x69
 MPU6050 mpu;
-//MPU6050 mpu(0x69); // <-- use for AD0 high
-
 
 #define OUTPUT_READABLE_QUATERNION
 
 #define INTERRUPT_PIN 2  // use pin 2 on Arduino Uno & most boards
 #define LED_PIN 13       // (Arduino is 13, Teensy is 11, Teensy++ is 6)
-#define PIN_BUTTON 4     // Define the button pin
+#define CALIBRATE_BUTTON 4     // Define the button pin
+#define ACTION_BUTTON 6     // Define the button pin
 
 bool blinkState = false;
 
@@ -98,37 +97,49 @@ void setup() {
 
     // Configure LED and button pin
     pinMode(LED_PIN, OUTPUT);
-    pinMode(PIN_BUTTON, INPUT_PULLUP); // Enable internal pull-up resistor
+    pinMode(CALIBRATE_BUTTON, INPUT_PULLUP); // Enable internal pull-up resistor
+    pinMode(ACTION_BUTTON, INPUT_PULLUP); // Enable internal pull-up resistor
 }
 
 void loop() {
-    // If DMP is not ready, return
     if (!dmpReady) return;
 
-    // Read a packet from FIFO
-    if (mpu.dmpGetCurrentFIFOPacket(fifoBuffer)) { // Get the latest packet
-        // Get quaternion data
-        mpu.dmpGetQuaternion(&q, fifoBuffer);
+    // Check if FIFO has data and handle overflow
+    fifoCount = mpu.getFIFOCount();
+    if (fifoCount >= 1024) { // Overflow
+        mpu.resetFIFO();
+        Serial.println(F("FIFO overflow!"));
+    }
 
-        // Read button state (LOW when pressed, HIGH when not pressed)
-        int buttonState = digitalRead(PIN_BUTTON);
+    // If interrupt flag is set, read the packet
+    if (mpuInterrupt || fifoCount >= packetSize) {
+        mpuInterrupt = false; // Clear interrupt flag
 
-        // Print quaternion data and button state
-        Serial.print(q.w);
-        Serial.print(",");
-        Serial.print(q.x);
-        Serial.print(",");
-        Serial.print(q.y);
-        Serial.print(",");
-        Serial.print(q.z);
-        Serial.print(",");
-        Serial.println(buttonState); // Add button state at the end
+        // Get data from FIFO
+        if (mpu.dmpGetCurrentFIFOPacket(fifoBuffer)) {
+            mpu.dmpGetQuaternion(&q, fifoBuffer);
+            int calButtonState = digitalRead(CALIBRATE_BUTTON);
+            int actionButtonState = digitalRead(ACTION_BUTTON);
 
-        // Blink LED to indicate activity
-        blinkState = !blinkState;
-        digitalWrite(LED_PIN, blinkState);
+            // Print quaternion and button state
+            Serial.print(q.w);
+            Serial.print(",");
+            Serial.print(q.x);
+            Serial.print(",");
+            Serial.print(q.y);
+            Serial.print(",");
+            Serial.print(q.z);
+            Serial.print(",");
+            Serial.print(calButtonState); 
+            Serial.print(",");
+            Serial.println(actionButtonState);
 
-        // Unity needs a delay to read data
-        delay(33); // 30 frames a second
+            // Blink LED
+            blinkState = !blinkState;
+            digitalWrite(LED_PIN, blinkState);
+
+            // Delay for Unity frame rate
+            delay(33);
+        }
     }
 }
