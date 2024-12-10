@@ -45,7 +45,7 @@ public class HorseMovement : MonoBehaviour
 
     private void Update()
     {
-        if (controls.playerVariables.buttonThing) { ResetRotation(); }
+        if (controls.playerVariables.calibrateThing) { ResetRotation(); }
         if (controls.playerVariables.rotation != null) 
         {
             CalculateSpeed();

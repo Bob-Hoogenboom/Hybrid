@@ -19,8 +19,9 @@ namespace Arduino
         //[Header("Getter/Setter")]
         public Quaternion gyroscopeRotation { get; private set; }
         public bool calibratePressed { get; private set; }
+        public bool actionPressed { get; private set; }
 
-        public override PlayerVariables ControlVariables => new PlayerVariables(gyroscopeRotation, calibratePressed);
+        public override PlayerVariables ControlVariables => new PlayerVariables(gyroscopeRotation, calibratePressed, actionPressed);
 
 
         private void Start()
@@ -65,7 +66,7 @@ namespace Arduino
 
                 _strData = _strRecieved.Split(",");
 
-                if (_strData.Length >= 5) // Ensure there are at least 5 values (4 for quaternion, 1 for button state)
+                if (_strData.Length >= 6) // Ensure there are at least 5 values (4 for quaternion, 1 for button state)
                 {
                     // Parse the first four quaternion values
                     if (float.TryParse(_strData[0], out qw) &&
@@ -82,9 +83,10 @@ namespace Arduino
                     }
 
                     // Handle button press (5th value) via a Ternary Operator 
-                    calibratePressed = _strData[4].Trim() == "0" ? true : false;// "0" is for when the button is pressed this is for the internal pull-up resistor
+                    // "0" is for when the button is pressed this is for the internal pull-up resistor
+                    calibratePressed = _strData[4].Trim() == "0" ? true : false;
 
-
+                    actionPressed = _strData[5].Trim() == "0" ? true : false;
                 }
                 else
                 {
