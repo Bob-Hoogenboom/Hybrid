@@ -62,9 +62,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   arduino: {fileID: 1770530572825929571}
   xRotationClamp: 30
-  zRotationClamp: 15
+  zRotationClamp: 30
   sensitivity: 10
+  speedModifier: 30
   shakeSpeed: 0
+  maxOffset: 0.5
+  cornerMultiplier:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  splineContainer: {fileID: 0}
 --- !u!1001 &1512721985437188993
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -96,17 +123,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 952938f2286899848bb57a65ad89c9a4,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 952938f2286899848bb57a65ad89c9a4,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 952938f2286899848bb57a65ad89c9a4,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 952938f2286899848bb57a65ad89c9a4,
         type: 3}

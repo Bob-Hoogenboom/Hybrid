@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Arduino
 {
-    public class ArduinoInput : MonoBehaviour
+    public class ArduinoInput : ControlInterfaceClass
     {
         public string[] ports = SerialPort.GetPortNames();
         public SerialPort arduinoPort; //Check for port*
@@ -19,6 +19,8 @@ namespace Arduino
         //[Header("Getter/Setter")]
         public Quaternion gyroscopeRotation { get; private set; }
         public bool calibratePressed { get; private set; }
+
+        public override PlayerVariables ControlVariables => new PlayerVariables(gyroscopeRotation, calibratePressed);
 
 
         private void Start()
