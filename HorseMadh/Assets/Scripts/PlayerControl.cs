@@ -18,6 +18,7 @@ public interface ControlInterface
 {
     public abstract PlayerVariables ControlVariables { get; }
 }
+
 public abstract class ControlInterfaceClass : MonoBehaviour, ControlInterface
 {
     public virtual PlayerVariables ControlVariables => throw new NotImplementedException();
@@ -25,12 +26,14 @@ public abstract class ControlInterfaceClass : MonoBehaviour, ControlInterface
 
 public class PlayerVariables
 {
-    public PlayerVariables(Quaternion rotation, bool button)
+    public PlayerVariables(Quaternion rotation, bool calibrateBTN, bool actrionBTN)
     {
         this.rotation = rotation;
-        this.buttonThing = button;
+        this.calibrateThing = calibrateBTN;
+        this.actionThing = actrionBTN;
     }
 
     public Quaternion rotation;
-    public bool buttonThing;
+    public bool calibrateThing;
+    public bool actionThing;
 }

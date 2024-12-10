@@ -7,7 +7,8 @@ public class KeyboardInput : ControlInterfaceClass
     public PlayerVariables Control()
     {
         Vector3 eulerRot = Vector3.zero;
-        bool buttonPress = false;
+        bool calibratePress = false;
+        bool actionPress = false;
 
         if (Input.GetKey(KeyCode.A))
         {
@@ -26,11 +27,16 @@ public class KeyboardInput : ControlInterfaceClass
             eulerRot.x = -70;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            buttonPress = true;
+            calibratePress = true;
         }
 
-        return new PlayerVariables(Quaternion.Euler(eulerRot), buttonPress);
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            calibratePress = true;
+        }
+
+        return new PlayerVariables(Quaternion.Euler(eulerRot), calibratePress, actionPress);
     }
 }
