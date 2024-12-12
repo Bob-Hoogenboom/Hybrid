@@ -62,7 +62,7 @@ namespace Arduino
             try
             {
                 _strRecieved = arduinoPort.ReadLine();
-                Debug.Log($"Raw data received: {_strRecieved}");
+                //Debug.Log($"Raw data received: {_strRecieved}");
 
                 _strData = _strRecieved.Split(",");
 
