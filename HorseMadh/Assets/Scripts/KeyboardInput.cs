@@ -34,7 +34,7 @@ public class KeyboardInput : ControlInterfaceClass
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            calibratePress = true;
+            actionPress = true;
         }
 
         return new PlayerVariables(Quaternion.Euler(eulerRot), calibratePress, actionPress);
