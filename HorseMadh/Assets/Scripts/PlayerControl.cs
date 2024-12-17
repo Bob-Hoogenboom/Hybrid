@@ -26,14 +26,14 @@ public abstract class ControlInterfaceClass : MonoBehaviour, ControlInterface
 
 public class PlayerVariables
 {
-    public PlayerVariables(Quaternion rotation, bool calibrateBTN, bool actrionBTN)
+    public PlayerVariables(Quaternion rotation, bool calibrateBTN, bool actionBTN)
     {
         this.rotation = rotation;
         this.calibrateThing = calibrateBTN;
-        this.actionThing = actrionBTN;
+        this.actionThing = actionBTN;
     }
 
-    public Quaternion rotation;
-    public bool calibrateThing;
-    public bool actionThing;
+    public Quaternion rotation { get; private set; }
+    public bool calibrateThing { get; private set; }
+    public bool actionThing { get; private set; }
 }
