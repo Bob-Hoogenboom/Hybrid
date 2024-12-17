@@ -100,14 +100,7 @@ public class HorseMovement : MonoBehaviour
         Vector3 trackPosition = _splineTrack.EvaluatePosition(_trackProgress);
 
         //controls for offsetting the player on the track and clamps between the max
-        if (transform.rotation.z < 0)
-        {
-            _trackOffset -= transform.rotation.z * Time.deltaTime * shakeSpeed;
-        }
-        else if (transform.rotation.z > 0)
-        {
-            _trackOffset -= transform.rotation.z * Time.deltaTime * shakeSpeed;
-        }
+        _trackOffset -= NormalizeAngle(controls.playerVariables.rotation.eulerAngles.z) * Time.deltaTime * shakeSpeed;
         _trackOffset = Mathf.Clamp(_trackOffset, -maxOffset, maxOffset);
 
         //calculates and sets the transform offset from the center of the track

@@ -12,19 +12,19 @@ public class KeyboardInput : ControlInterfaceClass
 
         if (Input.GetKey(KeyCode.A))
         {
-            eulerRot.z = 45;
+            eulerRot.z = 20;
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            eulerRot.z = -45;
+            eulerRot.z = -20;
         }
         if (Input.GetKey(KeyCode.W))
         {
-            eulerRot.x = 70;
+            eulerRot.x = 40;
         }
         else if (Input.GetKey(KeyCode.S))
         {
-            eulerRot.x = -70;
+            eulerRot.x = -40;
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
