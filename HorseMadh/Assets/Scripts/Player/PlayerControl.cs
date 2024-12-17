@@ -6,9 +6,9 @@ public class PlayerControl : MonoBehaviour
     [SerializeReference]
     private ControlInterfaceClass controlScheme;
     [SerializeField] private float stunTime = 2f;
-    private float currentStunTime = 0f;
+    private float _currentStunTime = 0f;
     [SerializeField] private float immunityTimer = 3f;
-    private float currentImmunityTimer = 0f;
+    private float _currentImmunityTimer = 0f;
 
     public PlayerVariables playerVariables { get; private set; }
     public bool isStunned { get; private set; }
@@ -20,17 +20,17 @@ public class PlayerControl : MonoBehaviour
         if (isStunned)
         {
             isImmune = true;
-            currentStunTime -= Time.deltaTime;
-            if (currentStunTime < 0)
+            _currentStunTime -= Time.deltaTime;
+            if (_currentStunTime < 0)
             {
                 isStunned = false;
-                currentImmunityTimer = immunityTimer;
+                _currentImmunityTimer = immunityTimer;
             }
         }
-        if (currentImmunityTimer > 0)
+        if (_currentImmunityTimer > 0)
         {
-            currentImmunityTimer -= Time.deltaTime;
-            if (currentImmunityTimer <= 0) 
+            _currentImmunityTimer -= Time.deltaTime;
+            if (_currentImmunityTimer <= 0) 
             {
                 isImmune = false;
             }
@@ -41,7 +41,7 @@ public class PlayerControl : MonoBehaviour
     {
         if (isImmune) return;
         isStunned = true;
-        currentStunTime = stunTime;
+        _currentStunTime = stunTime;
     }
 }
 

@@ -9,7 +9,7 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private PlayerControl controls;
     [SerializeField] private SpriteRenderer attackIndicator;
 
-    private bool hasTargetInRange = false;
+    private bool _hasTargetInRange = false;
 
     private void Update()
     {
@@ -23,8 +23,8 @@ public class PlayerAttack : MonoBehaviour
             detectedPlayers.Add(player);
         }
 
-        hasTargetInRange = detectedPlayers.Count > 0;
-        if (!hasTargetInRange)
+        _hasTargetInRange = detectedPlayers.Count > 0;
+        if (!_hasTargetInRange)
         {
             attackIndicator.enabled = false;
             return;
