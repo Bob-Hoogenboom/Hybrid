@@ -5,12 +5,26 @@ public class PlayerControl : MonoBehaviour
 {
     [SerializeReference]
     private ControlInterfaceClass controlScheme;
+    [SerializeField] private float stunTime = 2f;
+    private float currentStunTime = 0f;
 
     public PlayerVariables playerVariables { get; private set; }
+    public bool isStunned { get; private set; }
 
     private void Update()
     {
         playerVariables = controlScheme.ControlVariables;
+        if (isStunned)
+        {
+            currentStunTime -= Time.deltaTime;
+            if (currentStunTime < 0) isStunned = false;
+        }
+    }
+
+    public void StunPlayer()
+    {
+        isStunned = true;
+        currentStunTime = stunTime;
     }
 }
 

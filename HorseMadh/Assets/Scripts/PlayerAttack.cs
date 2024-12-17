@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
@@ -6,6 +7,9 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private float attackRadius = 1f;
 
     [SerializeField] private PlayerControl controls;
+    [SerializeField] private SpriteRenderer attackIndicator;
+
+    private bool hasTargetInRange = false;
 
     private void Update()
     {
@@ -13,15 +17,26 @@ public class PlayerAttack : MonoBehaviour
         List<PlayerControl> detectedPlayers = new List<PlayerControl>();
         foreach (Collider collider in colliders)
         {
-            if (collider.gameObject == this.gameObject) continue;
-            collider.gameObject.TryGetComponent(out PlayerControl player);
+            if (collider.transform.gameObject == this.gameObject) continue;
+            if (!collider.gameObject.TryGetComponent(out PlayerControl player)) continue;
             detectedPlayers.Add(player);
         }
 
+        hasTargetInRange = detectedPlayers.Count > 0;
+        if (!hasTargetInRange)
+        {
+            attackIndicator.enabled = false;
+            return;
+        }
+        else
+        {
+            attackIndicator.enabled = true;
+        }
+
+        detectedPlayers.OrderBy((a) => Vector3.Distance(transform.position, a.transform.position));
         if (controls.playerVariables.actionThing)
         {
-            Debug.Log("Attack");
-            Debug.Log(string.Join(", ", detectedPlayers));
+            detectedPlayers[0].StunPlayer();
         }
     }
 
