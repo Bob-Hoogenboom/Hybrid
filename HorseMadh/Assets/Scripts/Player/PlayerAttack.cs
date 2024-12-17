@@ -19,6 +19,7 @@ public class PlayerAttack : MonoBehaviour
         {
             if (collider.transform.gameObject == this.gameObject) continue;
             if (!collider.gameObject.TryGetComponent(out PlayerControl player)) continue;
+            if (player.isImmune) continue;
             detectedPlayers.Add(player);
         }
 

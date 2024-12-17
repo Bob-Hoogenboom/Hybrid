@@ -7,22 +7,39 @@ public class PlayerControl : MonoBehaviour
     private ControlInterfaceClass controlScheme;
     [SerializeField] private float stunTime = 2f;
     private float currentStunTime = 0f;
+    [SerializeField] private float immunityTimer = 3f;
+    private float currentImmunityTimer = 0f;
 
     public PlayerVariables playerVariables { get; private set; }
     public bool isStunned { get; private set; }
+    public bool isImmune {  get; private set; }
 
     private void Update()
     {
         playerVariables = controlScheme.ControlVariables;
         if (isStunned)
         {
+            isImmune = true;
             currentStunTime -= Time.deltaTime;
-            if (currentStunTime < 0) isStunned = false;
+            if (currentStunTime < 0)
+            {
+                isStunned = false;
+                currentImmunityTimer = immunityTimer;
+            }
+        }
+        if (currentImmunityTimer > 0)
+        {
+            currentImmunityTimer -= Time.deltaTime;
+            if (currentImmunityTimer <= 0) 
+            {
+                isImmune = false;
+            }
         }
     }
 
     public void StunPlayer()
     {
+        if (isImmune) return;
         isStunned = true;
         currentStunTime = stunTime;
     }

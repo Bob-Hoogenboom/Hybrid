@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1392403229395759074}
   - component: {fileID: 903586238109410255}
+  - component: {fileID: 4928040624073062082}
   m_Layer: 0
   m_Name: AttackIndicator
   m_TagString: Untagged
@@ -85,6 +86,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4928040624073062082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6300376030520709626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce3558471ece8f54092b0e205a2cbae8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 903586238109410255}
 --- !u!1 &9121751585528102240
 GameObject:
   m_ObjectHideFlags: 0
