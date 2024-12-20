@@ -458,8 +458,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controlScheme: {fileID: 508792861}
-  stunTime: 2
-  immunityTimer: 3
 --- !u!114 &508792864
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -9,8 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8731100627109175721}
-  - component: {fileID: 1770530572825929571}
   - component: {fileID: 4649640611439305488}
+  - component: {fileID: 4300011571706234736}
+  - component: {fileID: 1770530572825929571}
+  - component: {fileID: 3098861935530398742}
   m_Layer: 0
   m_Name: Horsey
   m_TagString: Untagged
@@ -34,20 +36,6 @@ Transform:
   - {fileID: 1402024509503251562}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1770530572825929571
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9121751585528102240}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 27f5aff5c38b4eb428da30e3681e411d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ports:
-  - COM3
 --- !u!114 &4649640611439305488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60,7 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1ed5c2d1426cb24b984a33d8b76c992, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  arduino: {fileID: 1770530572825929571}
+  controls: {fileID: 4300011571706234736}
   xRotationClamp: 30
   zRotationClamp: 30
   sensitivity: 10
@@ -92,6 +80,45 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   splineContainer: {fileID: 0}
+--- !u!114 &4300011571706234736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9121751585528102240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af4ff1d34b37ea9488ed74246c08cbd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controlScheme: {fileID: 3098861935530398742}
+--- !u!114 &1770530572825929571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9121751585528102240}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f5aff5c38b4eb428da30e3681e411d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ports:
+  - COM4
+--- !u!114 &3098861935530398742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9121751585528102240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 277d32eee715dd447b0333644f1366b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1512721985437188993
 PrefabInstance:
   m_ObjectHideFlags: 0
