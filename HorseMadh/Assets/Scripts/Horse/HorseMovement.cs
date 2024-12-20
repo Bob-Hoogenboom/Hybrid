@@ -22,7 +22,6 @@ public class HorseMovement : MonoBehaviour
     [SerializeField] private float speedModifier = 200f; 
     private float _previousXRotation = 0f;
     public float shakeSpeed = 0f;
-    private float _slowdownModifier = 1f;
 
     [Header("SplineTrack")]
     [Tooltip("The maximum offset from the main line of the spline track")]
@@ -139,10 +138,8 @@ public class HorseMovement : MonoBehaviour
 
         float TheMarkiplier = Utility.Remap(baseMultiplier, -maxCurveValue, maxCurveValue, minCurveValue, maxCurveValue);
 
-        _slowdownModifier = controls.isStunned ? 0f : 1f;
-
         //adds progress on the track with a multiplier and resets to zero at start position
-        _trackProgress += (shakeSpeed * TheMarkiplier * _slowdownModifier) * Time.deltaTime / _trackLength;
+        _trackProgress += (shakeSpeed * TheMarkiplier) * Time.deltaTime / _trackLength;
         if (_trackProgress > 1f)
         {
             _trackProgress = 0f;
