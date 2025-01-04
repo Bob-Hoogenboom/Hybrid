@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEditor.ShaderKeywordFilter;
 using UnityEngine;
 
 /// <summary>
@@ -7,20 +10,68 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] private int lapCount = 3;
+
+    [SerializeField] private int playerOneLap;
+    [SerializeField] private int playerTwoLap;
+
+    //singleton, static instance
     public static GameManager Instance;
     private void Awake()
     {
         Instance = this;
     }
 
-    //win screen
+    public void lapCountUp(int playerindex)
+    {
+        switch (playerindex)
+        {
+            case 0:
+                playerOneLap++;
+                CheckWin();
+                break;
 
-    //get player 1
-    //get player 2
+            case 1:
+                playerTwoLap++;
+                CheckWin();
+                break;
 
-    //update laps (player)
+            default:
+                Debug.LogError("More then 2 'horsemovements' in the scene");
+                break;
+                
+        }
+    }
 
-    //check if 3 laps are achieved by player X
+    private void CheckWin()
+    {
+        if (playerOneLap >= lapCount)
+        {
+            //playerOneWin
+            StartCoroutine(WinPlayer(1));
+        }
 
-    //show win screen for player X
+        if (playerTwoLap >= lapCount)
+        {
+            //playerTwoWin
+            StartCoroutine(WinPlayer(2));
+        }
+    }
+
+    IEnumerator WinPlayer(int player)
+    {
+        //enable win screen
+        //edit text "player 'player' wins"
+        //wait for a second
+        //scene transition to menu
+
+        //or
+
+        //instantiate win screen with the playerindex
+            //let the winscreen handle itself
+        //wait a second
+        //transition to main menu
+
+       yield return null;
+    }
 }
