@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4300011571706234736}
   - component: {fileID: 1770530572825929571}
   - component: {fileID: 3098861935530398742}
+  - component: {fileID: 5463794154955853316}
   m_Layer: 0
   m_Name: Horsey
   m_TagString: Untagged
@@ -119,6 +120,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 277d32eee715dd447b0333644f1366b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!136 &5463794154955853316
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9121751585528102240}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!1001 &1512721985437188993
 PrefabInstance:
   m_ObjectHideFlags: 0

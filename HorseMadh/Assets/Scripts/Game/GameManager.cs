@@ -1,7 +1,7 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.ShaderKeywordFilter;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// This script uses singletons and a subscribe event to let players change their lap count and check if any player has gotten 3 laps first
@@ -12,66 +12,45 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private int lapCount = 3;
 
-    [SerializeField] private int playerOneLap;
-    [SerializeField] private int playerTwoLap;
+    [SerializeField] private HorseMovement playerOne;
+    [SerializeField] private HorseMovement playerTwo; 
 
-    //singleton, static instance
-    public static GameManager Instance;
-    private void Awake()
+    [Header("Win Events")]
+    [SerializeField] private GameObject winScreen;
+    [SerializeField] private float timeWinToTransition = 3f;
+    public UnityEvent hasGameEnded;
+
+    private void Start()
     {
-        Instance = this;
+        if (winScreen != null) winScreen.SetActive(false); //ensure its always false at the start
+        if (playerOne != null) playerOne.onLapCompleted += CheckWin;
+        if (playerTwo != null) playerTwo.onLapCompleted += CheckWin;
     }
 
-    public void lapCountUp(int playerindex)
+    private void CheckWin(int i, HorseMovement player)
     {
-        switch (playerindex)
+        if (i >= lapCount)
         {
-            case 0:
-                playerOneLap++;
-                CheckWin();
-                break;
-
-            case 1:
-                playerTwoLap++;
-                CheckWin();
-                break;
-
-            default:
-                Debug.LogError("More then 2 'horsemovements' in the scene");
-                break;
-                
+            StartCoroutine(WinPlayer(player));
         }
     }
 
-    private void CheckWin()
+    IEnumerator WinPlayer(HorseMovement player)
     {
-        if (playerOneLap >= lapCount)
-        {
-            //playerOneWin
-            StartCoroutine(WinPlayer(1));
-        }
-
-        if (playerTwoLap >= lapCount)
-        {
-            //playerTwoWin
-            StartCoroutine(WinPlayer(2));
-        }
-    }
-
-    IEnumerator WinPlayer(int player)
-    {
-        //enable win screen
-        //edit text "player 'player' wins"
-        //wait for a second
-        //scene transition to menu
-
-        //or
-
         //instantiate win screen with the playerindex
-            //let the winscreen handle itself
-        //wait a second
-        //transition to main menu
+        //let the winscreen handle itself
+        if(winScreen !=null) winScreen.SetActive(true);
 
-       yield return null;
+        //invoke sounds/paarticles/other things
+        hasGameEnded.Invoke();
+
+        //wait a second
+        yield return new WaitForSeconds(timeWinToTransition);
+
+        //transition to main menu
+        SceneManager.LoadScene(0); //main menu should always be the first screen
+
+
+        yield return null;
     }
 }
