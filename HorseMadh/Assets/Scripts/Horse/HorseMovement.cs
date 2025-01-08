@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -32,13 +33,17 @@ public class HorseMovement : MonoBehaviour
 
     [SerializeField] private SplineContainer splineContainer;
 
+    public event Action<int, HorseMovement> onLapCompleted;
+
     private Spline _splineTrack;
     private float _trackLength;
     private float _trackProgress = 0f;
     private float _trackOffset;
+    private int _lapCount = 0;
 
     private void Start()
     {
+        _lapCount = 0;
         _splineTrack = splineContainer.Spline;
         _trackLength = _splineTrack.GetLength();
     }
@@ -172,5 +177,14 @@ public class HorseMovement : MonoBehaviour
         Debug.Log("Button pressed: Resetting rotation and recalibrating gyroscope.");
         // Reset the object's rotation
         transform.rotation = Quaternion.identity;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Finish"))
+        {
+            _lapCount++;
+            onLapCompleted?.Invoke(_lapCount, this);
+        }    
     }
 }
