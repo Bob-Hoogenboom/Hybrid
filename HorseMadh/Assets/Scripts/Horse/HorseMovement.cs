@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Splines;
+using UnityEngine.UIElements;
 
 /// <summary>
 /// Sources:
@@ -32,8 +33,9 @@ public class HorseMovement : MonoBehaviour
     [SerializeField] private AnimationCurve cornerMultiplier;
 
     [SerializeField] private SplineContainer splineContainer;
+    [SerializeField] private int playerIndex;
 
-    public event Action<int, HorseMovement> onLapCompleted;
+    public event Action<int, int> onLapCompleted;
 
     private Spline _splineTrack;
     private float _trackLength;
@@ -48,7 +50,7 @@ public class HorseMovement : MonoBehaviour
         _trackLength = _splineTrack.GetLength();
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         if (controls.playerVariables.calibrateThing) { ResetRotation(); }
         if (controls.playerVariables.rotation != null) 
@@ -184,7 +186,7 @@ public class HorseMovement : MonoBehaviour
         if (other.CompareTag("Finish"))
         {
             _lapCount++;
-            onLapCompleted?.Invoke(_lapCount, this);
+            onLapCompleted?.Invoke(_lapCount, playerIndex);
         }    
     }
 }
