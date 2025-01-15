@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.IO.Ports;
 using UnityEngine;
 
@@ -26,23 +27,44 @@ namespace Arduino
 
         private void Start()
         {
-            //search for a port with active input from an Arduino
-            foreach (string port in ports)
+            ports = SerialPort.GetPortNames();
+            StartCoroutine(TryConnectToArduino());
+        }
+
+        private IEnumerator TryConnectToArduino()
+        {
+            while (arduinoPort == null || !arduinoPort.IsOpen)
             {
-                try
+                foreach (string port in ports)
                 {
-                    arduinoPort = new SerialPort(port, 115200)
+                    try
                     {
-                        ReadTimeout = 100
-                    };
-                    arduinoPort.Open();
-                    Debug.Log($"Opened port {port}");
-                    break; // Exit the loop once a port is successfully opened
+                        arduinoPort = new SerialPort(port, 115200)
+                        {
+                            ReadTimeout = 100
+                        };
+                        arduinoPort.Open();
+                        Debug.Log($"Successfully connected to port {port}");
+                        yield break; // Exit the coroutine once connected
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Debug.LogWarning($"Failed to connect to port {port}: {ex.Message}");
+                    }
                 }
-                catch (System.Exception ex)
-                {
-                    Debug.LogWarning($"Could not open port {port}: {ex.Message}");
-                }
+
+                Debug.Log("Retrying to connect in 2 seconds...");
+                yield return new WaitForSeconds(2); // Wait for 2 seconds before retrying
+            }
+        }
+
+        private void OnDestroy()
+        {
+            // Ensure the port is closed when the object is destroyed
+            if (arduinoPort != null && arduinoPort.IsOpen)
+            {
+                arduinoPort.Close();
+                Debug.Log("Port closed.");
             }
         }
 
