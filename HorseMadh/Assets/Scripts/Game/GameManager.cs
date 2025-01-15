@@ -13,34 +13,34 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int lapCount = 3;
 
     [SerializeField] private HorseMovement playerOne;
-    [SerializeField] private HorseMovement playerTwo; 
+    [SerializeField] private HorseMovement playerTwo;
 
     [Header("Win Events")]
-    [SerializeField] private GameObject winScreen;
+    [SerializeField] private GameUIHandler gameUI;
     [SerializeField] private float timeWinToTransition = 3f;
     public UnityEvent hasGameEnded;
 
     private void Start()
     {
-        if (winScreen != null) winScreen.SetActive(false); //ensure its always false at the start
         if (playerOne != null) playerOne.onLapCompleted += CheckWin;
         if (playerTwo != null) playerTwo.onLapCompleted += CheckWin;
     }
 
-    private void CheckWin(int i, HorseMovement player)
+    private void CheckWin(int i, int player)
     {
+        if (gameUI != null) gameUI.UpdateScore(i, player);
         if (i >= lapCount)
         {
             StartCoroutine(WinPlayer(player));
         }
     }
 
-    IEnumerator WinPlayer(HorseMovement player)
+    IEnumerator WinPlayer(int player)
     {
         //instantiate win screen with the playerindex
         //let the winscreen handle itself
-        if(winScreen !=null) winScreen.SetActive(true);
 
+        if(gameUI != null) gameUI.EnableWinScreen(player);
         //invoke sounds/paarticles/other things
         hasGameEnded.Invoke();
 
