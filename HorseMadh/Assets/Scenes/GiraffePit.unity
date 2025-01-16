@@ -4821,12 +4821,12 @@ PrefabInstance:
     - target: {fileID: 5483548009593472207, guid: 44e8ce42ef9743e4cba261558437175f,
         type: 3}
       propertyPath: sensitivity
-      value: 7
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5483548009593472207, guid: 44e8ce42ef9743e4cba261558437175f,
         type: 3}
       propertyPath: speedModifier
-      value: 10
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 5483548009593472207, guid: 44e8ce42ef9743e4cba261558437175f,
         type: 3}
@@ -4941,12 +4941,12 @@ PrefabInstance:
     - target: {fileID: 2176222189109242855, guid: 31c6d3e05e223424f82bd14412a60b1e,
         type: 3}
       propertyPath: sensitivity
-      value: 7
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2176222189109242855, guid: 31c6d3e05e223424f82bd14412a60b1e,
         type: 3}
       propertyPath: speedModifier
-      value: 10
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 2176222189109242855, guid: 31c6d3e05e223424f82bd14412a60b1e,
         type: 3}
