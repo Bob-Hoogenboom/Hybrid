@@ -150,6 +150,8 @@ public class HorseMovement : MonoBehaviour
         if (_trackProgress > 1f)
         {
             _trackProgress = 0f;
+            _lapCount++;
+            onLapCompleted?.Invoke(_lapCount, playerIndex);
         }
     }
 
@@ -179,14 +181,5 @@ public class HorseMovement : MonoBehaviour
         Debug.Log("Button pressed: Resetting rotation and recalibrating gyroscope.");
         // Reset the object's rotation
         transform.rotation = Quaternion.identity;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Finish"))
-        {
-            _lapCount++;
-            onLapCompleted?.Invoke(_lapCount, playerIndex);
-        }    
     }
 }
