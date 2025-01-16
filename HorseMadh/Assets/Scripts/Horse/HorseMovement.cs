@@ -19,6 +19,7 @@ public class HorseMovement : MonoBehaviour
     public float zRotationClamp = 15f;
 
     public float sensitivity = 10f;
+    public float steerSensitivity = 0.5f;
 
     [Header("Speed")]
     [SerializeField] private float speedModifier = 200f; 
@@ -107,7 +108,7 @@ public class HorseMovement : MonoBehaviour
         Vector3 trackPosition = _splineTrack.EvaluatePosition(_trackProgress);
 
         //controls for offsetting the player on the track and clamps between the max
-        _trackOffset -= NormalizeAngle(controls.playerVariables.rotation.eulerAngles.z) * Time.deltaTime * shakeSpeed;
+        _trackOffset -= NormalizeAngle(controls.playerVariables.rotation.eulerAngles.z) * Time.deltaTime * shakeSpeed * steerSensitivity;
         _trackOffset = Mathf.Clamp(_trackOffset, -maxOffset, maxOffset);
 
         //calculates and sets the transform offset from the center of the track
@@ -150,6 +151,8 @@ public class HorseMovement : MonoBehaviour
         if (_trackProgress > 1f)
         {
             _trackProgress = 0f;
+            _lapCount++;
+            onLapCompleted?.Invoke(_lapCount, playerIndex);
         }
     }
 
@@ -179,14 +182,5 @@ public class HorseMovement : MonoBehaviour
         Debug.Log("Button pressed: Resetting rotation and recalibrating gyroscope.");
         // Reset the object's rotation
         transform.rotation = Quaternion.identity;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Finish"))
-        {
-            _lapCount++;
-            onLapCompleted?.Invoke(_lapCount, playerIndex);
-        }    
     }
 }

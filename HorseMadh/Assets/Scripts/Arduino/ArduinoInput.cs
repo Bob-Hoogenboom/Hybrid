@@ -28,7 +28,7 @@ namespace Arduino
         private void Start()
         {
             ports = SerialPort.GetPortNames();
-            StartCoroutine(TryConnectToArduino());
+           // StartCoroutine(TryConnectToArduino());
         }
 
         private IEnumerator TryConnectToArduino()
