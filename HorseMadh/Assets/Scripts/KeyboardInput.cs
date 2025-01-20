@@ -4,25 +4,34 @@ public class KeyboardInput : ControlInterfaceClass
 {
     public override PlayerVariables ControlVariables => Control();
 
+    [SerializeField]
+    private KeyCode forwardKey;
+    [SerializeField]
+    private KeyCode backKey;
+    [SerializeField]
+    private KeyCode rightKey;
+    [SerializeField]
+    private KeyCode leftKey;
+
     public PlayerVariables Control()
     {
         Vector3 eulerRot = Vector3.zero;
         bool calibratePress = false;
         bool actionPress = false;
 
-        if (Input.GetKey(KeyCode.A))
+        if (Input.GetKey(leftKey))
         {
             eulerRot.z = 20;
         }
-        else if (Input.GetKey(KeyCode.D))
+        else if (Input.GetKey(rightKey))
         {
             eulerRot.z = -20;
         }
-        if (Input.GetKey(KeyCode.W))
+        if (Input.GetKey(forwardKey))
         {
             eulerRot.x = 40;
         }
-        else if (Input.GetKey(KeyCode.S))
+        else if (Input.GetKey(backKey))
         {
             eulerRot.x = -40;
         }

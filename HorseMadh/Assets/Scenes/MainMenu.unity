@@ -429,7 +429,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ports:
-  - COM4
+  - COM3
 --- !u!4 &508792862
 Transform:
   m_ObjectHideFlags: 0
@@ -484,6 +484,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 277d32eee715dd447b0333644f1366b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  forwardKey: 119
+  backKey: 115
+  rightKey: 100
+  leftKey: 97
 --- !u!1 &656922357
 GameObject:
   m_ObjectHideFlags: 0
